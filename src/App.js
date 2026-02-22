@@ -5,12 +5,16 @@ function App() {
   const [image, setImage] = useState(null);
   const [result, setResult] = useState(null);
 
+  // filters
   const [grayscale, setGrayscale] = useState(false);
   const [resize, setResize] = useState(false);
   const [blur, setBlur] = useState(false);
+  const [rotate, setRotate] = useState(false);
 
+  // params
   const [width, setWidth] = useState(300);
   const [height, setHeight] = useState(300);
+  const [angle, setAngle] = useState(90);
 
   const AUTH_URL =
     "https://auth-service-production-0326.up.railway.app/auth/login";
@@ -30,6 +34,7 @@ function App() {
     if (grayscale) steps.push("grayscale");
     if (resize) steps.push("resize");
     if (blur) steps.push("blur");
+    if (rotate) steps.push("rotate");
 
     if (steps.length === 0) {
       alert("Select at least one filter");
@@ -39,13 +44,14 @@ function App() {
     const params = new URLSearchParams({
       steps: steps.join(","),
       width,
-      height
+      height,
+      angle
     });
 
     const formData = new FormData();
     formData.append("file", image);
 
-    const res = await fetch(`${IMAGE_PROCESS_URL}?${params}`, {
+    const res = await fetch(`${IMAGE_PROCESS_URL}?${params.toString()}`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`
@@ -69,6 +75,7 @@ function App() {
 
       <h3>Filters</h3>
 
+      {/* Grayscale */}
       <label>
         <input
           type="checkbox"
@@ -80,6 +87,7 @@ function App() {
 
       <br />
 
+      {/* Resize */}
       <label>
         <input
           type="checkbox"
@@ -108,6 +116,7 @@ function App() {
 
       <br />
 
+      {/* Blur */}
       <label>
         <input
           type="checkbox"
@@ -116,6 +125,29 @@ function App() {
         />
         Blur
       </label>
+
+      <br />
+
+      {/* Rotate */}
+      <label>
+        <input
+          type="checkbox"
+          checked={rotate}
+          onChange={e => setRotate(e.target.checked)}
+        />
+        Rotate
+      </label>
+
+      {rotate && (
+        <div>
+          Angle:
+          <input
+            type="number"
+            value={angle}
+            onChange={e => setAngle(e.target.value)}
+          />
+        </div>
+      )}
 
       <br /><br />
 
